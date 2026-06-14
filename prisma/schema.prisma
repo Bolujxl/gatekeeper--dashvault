@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String   // bcrypt hash, never the plaintext
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts  Account[]
+
+  @@index([email])
+}
+
+model Account {
+  id            String      @id @default(cuid())
+  userId        String
+  name          String      // e.g., "Chase Checking"
+  type          AccountType
+  institution   String      // e.g., "Chase", "Fidelity"
+  balanceCents  Int         // stored as integer cents, never floats
+  currency      String      @default("USD")
+  lastUpdated   DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CREDIT
+  INVESTMENT
+  LOAN
+}
