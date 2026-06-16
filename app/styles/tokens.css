@@ -1,106 +1,142 @@
 @import "tailwindcss";
 
-@theme {
-  /* ─── Dark mode (default) — navy + ice blue ─── */
+/* ─── Dark mode (default) — deep navy + ice blue ─── */
+:root {
+  --primary: rgb(137 196 224);
+  --on-primary: rgb(7 10 20);
+  --primary-container: rgb(32 78 113);
+  --on-primary-container: rgb(198 224 240);
 
-  /* Primary — ice blue, the brand accent */
-  --color-primary: rgb(137 196 224);                    /* #89C4E0 */
-  --color-on-primary: rgb(11 27 46);                    /* #0B1B2E */
-  --color-primary-container: rgb(32 78 113);            /* #204E71 */
-  --color-on-primary-container: rgb(198 224 240);       /* #C6E0F0 */
+  --secondary: rgb(156 175 192);
+  --on-secondary: rgb(7 10 20);
+  --secondary-container: rgb(28 38 56);
+  --on-secondary-container: rgb(200 213 226);
 
-  /* Secondary — muted blue-gray for subordinate UI */
-  --color-secondary: rgb(156 175 192);                  /* #9CAFC0 */
-  --color-on-secondary: rgb(22 37 54);                  /* #162536 */
-  --color-secondary-container: rgb(47 64 82);           /* #2F4052 */
-  --color-on-secondary-container: rgb(200 213 226);     /* #C8D5E2 */
+  --tertiary: rgb(178 196 175);
+  --on-tertiary: rgb(7 10 20);
+  --tertiary-container: rgb(40 56 36);
+  --on-tertiary-container: rgb(207 220 204);
 
-  /* Tertiary — muted sage for positive value indicators (used sparingly) */
-  --color-tertiary: rgb(178 196 175);                   /* #B2C4AF */
-  --color-on-tertiary: rgb(26 41 22);
-  --color-tertiary-container: rgb(51 71 47);
-  --color-on-tertiary-container: rgb(207 220 204);
+  --background: rgb(5 8 16);
+  --on-background: rgb(226 232 240);
 
-  /* Surfaces — the navy hierarchy */
-  --color-background: rgb(11 20 36);                    /* #0B1424 — page background */
-  --color-on-background: rgb(226 232 240);              /* #E2E8F0 */
+  --surface: rgb(13 19 31);
+  --on-surface: rgb(226 232 240);
+  --surface-variant: rgb(19 25 42);
+  --on-surface-variant: rgb(148 163 184);
 
-  --color-surface: rgb(16 26 43);                       /* #101A2B — default card */
-  --color-on-surface: rgb(226 232 240);
-  --color-surface-variant: rgb(30 41 59);               /* #1E293B — inputs, secondary surfaces */
-  --color-on-surface-variant: rgb(148 163 184);         /* #94A3B8 — muted text */
+  --surface-container-lowest: rgb(2 4 9);
+  --surface-container-low: rgb(8 12 22);
+  --surface-container: rgb(13 19 31);
+  --surface-container-high: rgb(19 27 43);
+  --surface-container-highest: rgb(25 35 56);
 
-  /* Surface elevation tiers — Material 3 has 5 */
-  --color-surface-container-lowest: rgb(8 16 28);       /* deepest — used for scrims */
-  --color-surface-container-low: rgb(13 23 39);
-  --color-surface-container: rgb(16 26 43);             /* same as surface */
-  --color-surface-container-high: rgb(23 34 53);        /* hero card, hover state */
-  --color-surface-container-highest: rgb(30 41 61);     /* dropdowns, popovers */
+  --outline: rgb(40 53 73);
+  --outline-variant: rgb(22 30 47);
 
-  /* Outline — borders and separators */
-  --color-outline: rgb(51 65 85);                       /* #334155 — visible border */
-  --color-outline-variant: rgb(30 41 59);               /* subtle separator */
+  --error: rgb(248 113 113);
+  --on-error: rgb(69 10 10);
+  --error-container: rgb(127 29 29);
+  --on-error-container: rgb(254 226 226);
 
-  /* Status */
-  --color-error: rgb(248 113 113);                      /* #F87171 */
-  --color-on-error: rgb(69 10 10);
-  --color-error-container: rgb(127 29 29);
-  --color-on-error-container: rgb(254 226 226);
+  --inverse-surface: rgb(226 232 240);
+  --inverse-on-surface: rgb(13 19 31);
+  --inverse-primary: rgb(32 78 113);
 
-  /* Inverse — used in tooltips, snackbars opposite of current mode */
-  --color-inverse-surface: rgb(226 232 240);
-  --color-inverse-on-surface: rgb(16 26 43);
-  --color-inverse-primary: rgb(32 78 113);
-
-  /* Scrim — modal backdrop dim layer */
-  --color-scrim: rgb(0 0 0);
-
-  /* Typography */
-  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-plex-mono), "SF Mono", monospace;
+  --scrim: rgb(0 0 0);
 }
 
+/* ─── Light mode — off-white with deeper primary ─── */
 @media (prefers-color-scheme: light) {
-  @theme {
-    --color-primary: rgb(27 78 119);                    /* #1B4E77 — darker for AA on white */
-    --color-on-primary: rgb(255 255 255);
-    --color-primary-container: rgb(211 232 246);
-    --color-on-primary-container: rgb(8 38 62);
+  :root {
+    --primary: rgb(27 78 119);
+    --on-primary: rgb(255 255 255);
+    --primary-container: rgb(211 232 246);
+    --on-primary-container: rgb(8 38 62);
 
-    --color-secondary: rgb(71 85 105);
-    --color-on-secondary: rgb(255 255 255);
-    --color-secondary-container: rgb(226 232 240);
-    --color-on-secondary-container: rgb(15 23 42);
+    --secondary: rgb(71 85 105);
+    --on-secondary: rgb(255 255 255);
+    --secondary-container: rgb(226 232 240);
+    --on-secondary-container: rgb(15 23 42);
 
-    --color-tertiary: rgb(74 102 71);
-    --color-on-tertiary: rgb(255 255 255);
-    --color-tertiary-container: rgb(220 230 215);
-    --color-on-tertiary-container: rgb(28 45 24);
+    --tertiary: rgb(74 102 71);
+    --on-tertiary: rgb(255 255 255);
+    --tertiary-container: rgb(220 230 215);
+    --on-tertiary-container: rgb(28 45 24);
 
-    --color-background: rgb(248 250 252);               /* #F8FAFC */
-    --color-on-background: rgb(15 23 42);
+    --background: rgb(248 250 252);
+    --on-background: rgb(15 23 42);
 
-    --color-surface: rgb(255 255 255);
-    --color-on-surface: rgb(15 23 42);
-    --color-surface-variant: rgb(241 245 249);
-    --color-on-surface-variant: rgb(71 85 105);
+    --surface: rgb(255 255 255);
+    --on-surface: rgb(15 23 42);
+    --surface-variant: rgb(241 245 249);
+    --on-surface-variant: rgb(71 85 105);
 
-    --color-surface-container-lowest: rgb(255 255 255);
-    --color-surface-container-low: rgb(248 250 252);
-    --color-surface-container: rgb(241 245 249);
-    --color-surface-container-high: rgb(226 232 240);
-    --color-surface-container-highest: rgb(203 213 225);
+    --surface-container-lowest: rgb(255 255 255);
+    --surface-container-low: rgb(248 250 252);
+    --surface-container: rgb(241 245 249);
+    --surface-container-high: rgb(226 232 240);
+    --surface-container-highest: rgb(203 213 225);
 
-    --color-outline: rgb(148 163 184);
-    --color-outline-variant: rgb(226 232 240);
+    --outline: rgb(148 163 184);
+    --outline-variant: rgb(226 232 240);
 
-    --color-error: rgb(185 28 28);
-    --color-on-error: rgb(255 255 255);
-    --color-error-container: rgb(254 226 226);
-    --color-on-error-container: rgb(127 29 29);
+    --error: rgb(185 28 28);
+    --on-error: rgb(255 255 255);
+    --error-container: rgb(254 226 226);
+    --on-error-container: rgb(127 29 29);
 
-    --color-inverse-surface: rgb(30 41 59);
-    --color-inverse-on-surface: rgb(248 250 252);
-    --color-inverse-primary: rgb(137 196 224);
+    --inverse-surface: rgb(30 41 59);
+    --inverse-on-surface: rgb(248 250 252);
+    --inverse-primary: rgb(137 196 224);
   }
+}
+
+/* Wire CSS variables into Tailwind v4 @theme */
+@theme {
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+
+  --color-background: var(--background);
+  --color-on-background: var(--on-background);
+
+  --color-surface: var(--surface);
+  --color-on-surface: var(--on-surface);
+  --color-surface-variant: var(--surface-variant);
+  --color-on-surface-variant: var(--on-surface-variant);
+
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  --color-error: var(--error);
+  --color-on-error: var(--on-error);
+  --color-error-container: var(--error-container);
+  --color-on-error-container: var(--on-error-container);
+
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
+  --color-inverse-primary: var(--inverse-primary);
+
+  --color-scrim: var(--scrim);
+
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-plex-mono);
 }

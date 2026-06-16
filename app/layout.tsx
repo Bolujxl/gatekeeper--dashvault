@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, IBM_Plex_Mono } from "next/font/google";
+import { Manrope, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-manrope",
   weight: ["400", "500", "600", "700"],
 });
 
@@ -19,6 +19,9 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Dashvault",
   description: "A vault for your financial records.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${plexMono.variable}`}>
+    <html lang="en" className={`${manrope.variable} ${plexMono.variable}`}>
       <body>{children}</body>
     </html>
   );
