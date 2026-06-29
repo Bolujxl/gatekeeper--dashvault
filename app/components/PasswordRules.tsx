@@ -10,42 +10,42 @@ interface Rule {
 }
 
 const RULES: Rule[] = [
-  { label: "At least 8 characters", test: (p) => p.length >= 8 },
-  { label: "An uppercase letter", test: (p) => /[A-Z]/.test(p) },
-  { label: "A lowercase letter", test: (p) => /[a-z]/.test(p) },
-  { label: "A number", test: (p) => /[0-9]/.test(p) },
+  { label: "8+ characters", test: (p) => p.length >= 8 },
+  { label: "Uppercase", test: (p) => /[A-Z]/.test(p) },
+  { label: "Lowercase", test: (p) => /[a-z]/.test(p) },
+  { label: "Number", test: (p) => /[0-9]/.test(p) },
 ];
 
 export default function PasswordRules({ password }: PasswordRulesProps) {
   return (
-    <ul className="space-y-1.5 mt-3" aria-label="Password requirements">
-      {RULES.map((rule) => {
-        const met = rule.test(password);
-        return (
-          <li
-            key={rule.label}
-            className="flex items-center gap-2 text-sm transition-colors"
-          >
+    <div className="mt-3" aria-label="Password requirements">
+      <p className="text-xs text-on-surface-variant mb-2 font-medium">
+        Your password needs
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {RULES.map((rule) => {
+          const met = rule.test(password);
+          return (
             <span
+              key={rule.label}
               className={`
-                w-4 h-4 rounded-full flex items-center justify-center text-xs flex-shrink-0
-                ${met
-                  ? "bg-primary text-on-primary"
-                  : "bg-surface-variant text-on-surface-variant"
+                inline-flex items-center
+                px-2.5 py-1 rounded-md
+                text-[11px]
+                border transition-all duration-200
+                ${
+                  met
+                    ? "bg-primary-container border-primary text-on-primary-container font-semibold"
+                    : "bg-transparent border-outline-variant text-on-surface-variant font-medium"
                 }
               `}
-              aria-hidden="true"
-            >
-              {met ? "\u2713" : "\u00B7"}
-            </span>
-            <span
-              className={met ? "text-on-surface" : "text-on-surface-variant"}
+              aria-label={`${rule.label}: ${met ? "met" : "not met"}`}
             >
               {rule.label}
             </span>
-          </li>
-        );
-      })}
-    </ul>
+          );
+        })}
+      </div>
+    </div>
   );
 }
