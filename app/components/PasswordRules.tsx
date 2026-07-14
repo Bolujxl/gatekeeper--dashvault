@@ -1,20 +1,10 @@
 "use client";
 
+import { PASSWORD_RULES } from "@/lib/auth/password-rules";
+
 interface PasswordRulesProps {
   password: string;
 }
-
-interface Rule {
-  label: string;
-  test: (password: string) => boolean;
-}
-
-const RULES: Rule[] = [
-  { label: "8+ characters", test: (p) => p.length >= 8 },
-  { label: "Uppercase", test: (p) => /[A-Z]/.test(p) },
-  { label: "Lowercase", test: (p) => /[a-z]/.test(p) },
-  { label: "Number", test: (p) => /[0-9]/.test(p) },
-];
 
 export default function PasswordRules({ password }: PasswordRulesProps) {
   return (
@@ -23,11 +13,11 @@ export default function PasswordRules({ password }: PasswordRulesProps) {
         Your password needs
       </p>
       <div className="flex flex-wrap gap-1.5">
-        {RULES.map((rule) => {
+        {PASSWORD_RULES.map((rule) => {
           const met = rule.test(password);
           return (
             <span
-              key={rule.label}
+              key={rule.id}
               className={`
                 inline-flex items-center
                 px-2.5 py-1 rounded-md

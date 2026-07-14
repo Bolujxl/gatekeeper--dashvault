@@ -3,7 +3,9 @@ import { getSession } from "./session";
 
 /**
  * Use in Server Components or Server Actions that require an authenticated user.
- * Redirects to /login if no valid session exists.
+ * Redirects to /login if no session exists. This is a read-only check — idle/
+ * absolute timeout enforcement (which requires writing/destroying the cookie)
+ * happens earlier, in proxy.ts, before the request ever reaches this page.
  * Returns the session's user info (userId, email, name) if authenticated.
  */
 export async function requireAuth() {

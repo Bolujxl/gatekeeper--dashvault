@@ -9,7 +9,9 @@ function createPrismaClient() {
   const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL! });
   return new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    // "query" is intentionally excluded: it logs raw SQL params, including
+    // the bcrypt hash selected during login, straight to stdout.
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 }
 

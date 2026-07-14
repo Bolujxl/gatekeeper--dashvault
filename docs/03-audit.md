@@ -96,6 +96,10 @@ export async function getPlaceholderHash(): Promise<string> {
 This way the format is always valid for the current bcrypt version, and you never need
 to hand-craft a hash string.
 
+> ✅ **RESOLVED** — `lib/auth/placeholder.ts` now implements exactly this: `getPlaceholderHash()`
+> computes and caches one dummy hash on first use via `hashPassword()`, instead of a
+> hand-written `$2a$10$...` literal. `loginAction` in `app/(auth)/actions.ts` calls it directly.
+
 ---
 
 ## 2. Session Hijacking (Weak Cookie Flags)
@@ -277,6 +281,11 @@ This gives the developer a clear error message at startup ("set SESSION_PASSWORD
 Also: the key is stored in `.env` and `.env` is in `.gitignore` (verified in prompt 1).
 `.env.example` is committed with an empty string, which is the correct convention.
 
+> ✅ **RESOLVED** — `lib/auth/session-config.ts` now throws at module load if
+> `SESSION_PASSWORD` is missing or under 32 characters, plus an additional entropy check
+> (rejects keys with fewer than 10 unique characters, e.g. `"aaaa...a"`) that this section
+> didn't originally call for but `docs/04-cross-check.md` (Vector F) flagged as a gap.
+
 ---
 
 ## 5. Brute Force & Credential Stuffing (No Rate Limiting)
@@ -415,6 +424,12 @@ provides incidental slowdown but is not rate limiting. This is the most critical
 in the current architecture and should be the first item addressed in a hardening phase.
 The project specification acknowledges this as deferred work.
 
+> ✅ **RESOLVED** — `lib/auth/rate-limit.ts` implements this limiter close to verbatim.
+> Wired into `loginAction` (`app/(auth)/actions.ts`) with both an IP limit (20/15min) and
+> an email limit (5/15min), and into `signupAction` with an IP limit (5/hour). Also layered
+> with account-level lockout — see `docs/04-cross-check.md` Vector G, also resolved — since
+> IP/email rate limiting alone doesn't stop a distributed or patient attacker.
+
 ---
 
 ## 6. Weak Defenses (Password Policy Weaknesses)
@@ -533,3 +548,16 @@ but there is no cap on total attempts from a single IP or against a single email
 An attacker can run hundreds of parallel login attempts, and the only defense is bcrypt's
 CPU cost. This is the #1 hardening priority and is already acknowledged as deferred
 in the project plan. The fix provided in Section 5 is drop-in ready.
+
+---
+
+## Status Update
+
+| Section | Finding | Status |
+|---------|---------|--------|
+| 1 | Hardcoded placeholder hash | ✅ **RESOLVED** — `lib/auth/placeholder.ts` |
+| 2 | Cookie flags | Already safe, no action needed |
+| 3 | CSRF | Already safe, no action needed |
+| 4 | No `SESSION_PASSWORD` startup validation | ✅ **RESOLVED** — `lib/auth/session-config.ts` |
+| 5 | No rate limiting | ✅ **RESOLVED** — `lib/auth/rate-limit.ts` + `actions.ts` |
+| 6 | No common-password blocklist | Still open (optional hardening, not implemented) |

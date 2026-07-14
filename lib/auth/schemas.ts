@@ -1,4 +1,10 @@
 import { z } from "zod";
+import { PASSWORD_MAX_LENGTH, PASSWORD_RULES } from "./password-rules";
+
+const passwordSchema = PASSWORD_RULES.reduce(
+  (schema, rule) => schema.refine(rule.test, rule.message),
+  z.string().max(PASSWORD_MAX_LENGTH, "Password is too long")
+);
 
 export const signupSchema = z.object({
   name: z
@@ -12,13 +18,7 @@ export const signupSchema = z.object({
     .toLowerCase()
     .email("Enter a valid email address")
     .max(254, "Email is too long"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(128, "Password is too long")
-    .regex(/[A-Z]/, "Password must contain an uppercase letter")
-    .regex(/[a-z]/, "Password must contain a lowercase letter")
-    .regex(/[0-9]/, "Password must contain a number"),
+  password: passwordSchema,
 });
 
 export const loginSchema = z.object({

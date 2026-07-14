@@ -77,6 +77,10 @@ freshSession.name = user.name;
 await freshSession.save();
 ```
 
+> ✅ **RESOLVED** — `app/(auth)/actions.ts` now has a shared `createSession()` helper used
+> by both `loginAction` and `signupAction` that destroys any pre-existing session before
+> writing the authenticated one, exactly per the remediated code above.
+
 ---
 
 ### Vector B: No Next.js Edge Middleware — Auth Enforced Only at Render Time
@@ -150,6 +154,12 @@ export const config = {
 
 This creates a **fail-closed** perimeter: every route under `/dashboard` is
 automatically protected without developer opt-in per page.
+
+> ✅ **RESOLVED** — `proxy.ts` at the project root (Next.js 16 renamed the `middleware.ts`
+> convention to `proxy.ts`/`export function proxy`) implements this fail-closed check using
+> `getIronSession(req, res, sessionOptions)` from `lib/auth/session-config.ts`, matched
+> against `/dashboard/:path*`, `/login`, and `/signup`. Confirmed compiling and appearing
+> as `ƒ Proxy (Middleware)` in `next build` output.
 
 ---
 
@@ -230,6 +240,14 @@ if (existingUser) {
   };
 }
 ```
+
+> ✅ **RESOLVED** — `signupAction` in `app/(auth)/actions.ts` now checks `existingUser` and
+> returns before calling `hashPassword()`. We kept the explicit "email already exists"
+> message rather than switching to the generic one — this app already leaks that
+> information via the message itself, so hiding it now would be a UX regression without a
+> matching security gain. A `try/catch` around `prisma.user.create()` (catching Prisma's
+> `P2002` unique-constraint error) covers the race where two concurrent signups both pass
+> the pre-check for the same email.
 
 ---
 
@@ -328,6 +346,13 @@ freshSession.lastActiveAt = Date.now();
 Update `requireAuth()` in `lib/auth/middleware.ts` to use `getValidatedSession()`
 instead of `getSession()`.
 
+> ✅ **RESOLVED** — `lib/auth/session.ts` implements `getValidatedSession()` almost exactly
+> as specified (8-hour absolute timeout, 30-minute idle timeout), reading the constants from
+> `lib/auth/session-config.ts`. `requireAuth()` and `requireGuest()` in
+> `lib/auth/middleware.ts` both call it instead of the raw `getSession()`. The cookie's own
+> `maxAge` was also tightened from 7 days to 8 hours to match. `loginAction`/`signupAction`
+> set `createdAt`/`lastActiveAt` via the shared `createSession()` helper.
+
 ---
 
 ### Vector E: Prisma Query Logging Leaks Sensitive Data in Development
@@ -388,6 +413,11 @@ client.$on("query", (e) => {
   console.log(`prisma:query ${e.query} — params: ${sanitized} — duration: ${e.duration}ms`);
 });
 ```
+
+> ✅ **RESOLVED (simpler variant)** — `lib/db.ts` drops `"query"` from the dev log level
+> entirely rather than redacting it, so raw SQL params (including the bcrypt hash) never
+> reach stdout. We chose "don't log it" over "log it, then scrub it" — one less place for a
+> redaction regex to have a bug. `"error"` and `"warn"` are still logged in development.
 
 ---
 
@@ -450,6 +480,11 @@ Update `.env.example` with generation instructions:
 # Generate with: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 SESSION_PASSWORD=""
 ```
+
+> ✅ **RESOLVED** — `lib/auth/session-config.ts` throws at module load if `SESSION_PASSWORD`
+> is missing, under 32 characters, or has fewer than 10 unique characters (the entropy
+> check this section asked for). `.env.example` now includes the generation command as a
+> comment above the variable.
 
 ---
 
@@ -533,6 +568,16 @@ await prisma.user.update({
 });
 ```
 
+> ✅ **RESOLVED** — `prisma/schema.prisma` gained `failedLoginAttempts`/`lockedUntil` on
+> `User` (migration `20260712173233_add_login_lockout`), and `loginAction` in
+> `app/(auth)/actions.ts` implements this near-verbatim: checks `lockedUntil` before
+> running bcrypt, increments/locks on failure, resets on success. Note the accepted
+> tradeoff this reintroduces: a locked account now responds *faster* than an unlocked one
+> (no bcrypt call), which is a timing side-channel in principle — but it only reveals
+> "this specific account is currently locked," which requires 5 prior failed attempts to
+> trigger, and doesn't hand an attacker anything cheaper than the signup form's existing
+> "email already exists" message.
+
 ---
 
 ### Vector H: `logoutAction` Lacks CSRF-Resistant Invocation Pattern
@@ -574,6 +619,11 @@ fake login page that captures credentials.
 No code change strictly required. For hardening, add `sameSite: "strict"` to the
 cookie (preventing the cookie from being sent on any cross-site navigation) or add
 a confirmation step before logout.
+
+> ⬜ **STILL OPEN** — `sameSite` is unchanged (`"lax"`), no logout confirmation step added.
+> Left alone deliberately: the doc itself classifies this Low risk and "no code change
+> strictly required," and switching to `"strict"` has the same UX tradeoff noted in
+> `docs/03-audit.md` §2 (breaks "click a link from an email, land logged in").
 
 ---
 

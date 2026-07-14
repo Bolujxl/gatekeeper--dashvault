@@ -1,24 +1,14 @@
-import { getIronSession, SessionOptions } from "iron-session";
+import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
+import { sessionOptions, SessionData } from "./session-config";
 
-export interface SessionData {
-  userId?: string;
-  email?: string;
-  name?: string;
-}
+export type { SessionData };
+export { sessionOptions };
 
-export const sessionOptions: SessionOptions = {
-  password: process.env.SESSION_PASSWORD as string,
-  cookieName: "dashvault_session",
-  cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: "/",
-  },
-};
-
+// Reads only. Next.js forbids writing cookies during a Server Component
+// render, so idle/absolute timeout enforcement (which needs to refresh or
+// destroy the cookie) lives in proxy.ts instead, where NextResponse allows
+// writes. This keeps requireAuth()/requireGuest() safe to call from pages.
 export async function getSession() {
   return await getIronSession<SessionData>(await cookies(), sessionOptions);
 }
