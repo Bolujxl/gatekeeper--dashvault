@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { Prisma } from "@prisma/client";
+
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
@@ -106,7 +106,7 @@ export async function signupAction(
   } catch (e) {
     // Two concurrent signups for the same email can both pass the check above
     // and race to create() — the DB's unique constraint is the real guard.
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+    if (typeof e === "object" && e !== null && (e as { code?: string }).code === "P2002") {
       return {
         fieldErrors: {
           email: "An account with this email already exists.",
